@@ -191,7 +191,7 @@ export function createExtensions(options = {}) {
     drawSelection(),
     rectangularSelection(),
     highlightActiveLine(),
-    highlightSelectionMatches(),
+    highlightSelectionMatches({ minSelectionLength: 3, wholeWords: true }),
     bracketMatching(),
 
     // Line wrapping

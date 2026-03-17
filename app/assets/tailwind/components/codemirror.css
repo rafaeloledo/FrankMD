@@ -234,7 +234,9 @@
 
   /* Selection matches (highlight all occurrences) */
   .cm-editor .cm-selectionMatch {
-    background: color-mix(in srgb, var(--theme-selection) 50%, transparent);
+    background: transparent;
+    outline: 1px solid color-mix(in srgb, var(--theme-accent) 50%, transparent);
+    border-radius: 2px;
   }
 
   /* === Matching Brackets === */

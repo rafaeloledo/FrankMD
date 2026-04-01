@@ -1,20 +1,22 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
-IMAGE="akitaonrails/frankmd:latest"
-SERVER="192.168.0.90"
-COMPOSE_DIR="/var/opt/docker/utils"
-COMPOSE_FILE="docker-compose.yml"
-SERVICE="frankmd"
-SSH_OPTS="-F /dev/null"
+IMAGE="${IMAGE:-akitaonrails/frankmd:latest}"
+SSH_HOST="${SSH_HOST:-akitaonrails@192.168.0.90}"
+REMOTE_DIR="${REMOTE_DIR:-/var/opt/docker/frank/md}"
+SSH_OPTS=(
+  -F /dev/null
+  -o StrictHostKeyChecking=no
+  -o UserKnownHostsFile=/tmp/codex_known_hosts
+)
 
-echo "==> Building image..."
+echo "==> Building $IMAGE..."
 docker build -t "$IMAGE" .
 
-echo "==> Pushing image..."
+echo "==> Pushing $IMAGE..."
 docker push "$IMAGE"
 
-echo "==> Deploying to $SERVER..."
-ssh $SSH_OPTS "$SERVER" "cd $COMPOSE_DIR && docker compose -f $COMPOSE_FILE stop $SERVICE && docker compose -f $COMPOSE_FILE pull $SERVICE && docker compose -f $COMPOSE_FILE up -d $SERVICE"
+echo "==> Restarting FrankMD on $SSH_HOST..."
+ssh "${SSH_OPTS[@]}" "$SSH_HOST" "cd $REMOTE_DIR && docker compose pull && docker compose down && docker compose up -d"
 
 echo "==> Done!"
